@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food App</title>
+    <script src="scripts.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+    <body>
+        <main>
+            <div class="header">
+                <div class="app-title">
+                    <a href="/">
+                        <h1>Recipe Shopper</h1>
+                    </a>
+                </div>
+                <p class="sub-title">Shopping lists based on meal recipes.</p>
+            </div>
+            <div class="search">
+                <div class="search-header">
+                    <h2>Search recipes</h2>
+                    <form id="search" autocomplete="off">
+                        <input type="text" name="query" autocomplete="off">
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+                <div class="search-results-list" style="display:none">
+                </div>
+            </div>
+            <div class="shopping-list" style="display:none">
+                <h2>Shopping list</h2>
+                <div class="shopping-list-items">
+                    <h3>Recipes:</h3>
+                    <div class="recipes">
+                    </div>
+                    <h3>Ingredients:</h3>
+                    <div class="ingredients">
+                    </div>
+                    <h4>Add other items:</h4>
+                    <form id="add-custom" autocomplete="off">
+                        <input type="text" name="item" autocomplete="off">
+                        <button type="submit">Add</button>
+                    </form>
+                </div>
+            </div>
+            <div class="start" style="display:none">
+                <button class="go">Go Shopping!</button>
+            </div>
+        </main>
+    </body>
+</html>
