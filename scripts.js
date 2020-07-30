@@ -10,17 +10,17 @@ let data = [];
 let shoppingListItems = [];
 
 const removeItem = e => {
-    const item = e.currentTarget.parentElement;
     const itemName = e.currentTarget.previousElementSibling.textContent;
     const itemIndex = shoppingListItems.indexOf(itemName);
     shoppingListItems.splice(itemIndex, 1);
-    const parent = item.parentElement;
     renderList();
 }
 
 const removeRecipe = e => {
-    const item = e.currentTarget.parentElement;
-    const parent = item.parentElement;
+    const deletedRecipe = e.currentTarget.dataset.src;
+    const recipeIndex = data.findIndex(recipe => recipe.href === deletedRecipe);
+    data[recipeIndex].state = "removed";
+    console.log(data);
     renderList();
 }
 
