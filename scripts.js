@@ -1,6 +1,7 @@
 const endpoint = "https://cors-anywhere.herokuapp.com/http://www.recipepuppy.com/api";
 const searchForm = document.querySelector("form#search");
 const addCustomForm = document.querySelector("form#add-custom");
+const goButton = document.querySelector("button.go");
 const searchResultsList = document.querySelector(".search-results-list");
 const shoppingListContainer = document.querySelector(".shopping-list");
 const ingredientsEl = document.querySelector(".shopping-list .ingredients");
@@ -20,7 +21,17 @@ const removeRecipe = e => {
     const deletedRecipe = e.currentTarget.dataset.src;
     const recipeIndex = data.findIndex(recipe => recipe.href === deletedRecipe);
     data[recipeIndex].state = "removed";
-    console.log(data);
+    const newShoppingList = [];
+    shoppingListItems.forEach(item => {
+        // Get the index of reference to the deleted recipe
+        const recipeLink = item.src.indexOf(deletedRecipe);
+        console.log(recipeLink);
+        // Delete the reference
+        recipeLink !== -1 && item.src.splice(recipeLink, 1)
+        item.src.length !== 0 && newShoppingList.push(item);
+    })
+    shoppingListItems = newShoppingList;
+    console.log(shoppingListItems);
     renderList();
 }
 
@@ -33,13 +44,19 @@ const activateButtons = () => {
     );
 }
 
+const addRecipeDependencies = recipe => {
+    const recipeSrc = recipe.href;
+    recipe.ingredients.forEach(ingredient => {
+        const itemIndex = shoppingListItems.findIndex(entry => entry.name === ingredient);
+        itemIndex
+            ? shoppingListItems.push({ name: ingredient, src: [recipeSrc] })
+            : shoppingListItems[itemIndex].src.push(recipeSrc)
+    })
+}
+
 const renderList = () => {
     const addedRecipes = data.filter(recipe => recipe.state === "adding");
-    addedRecipes.forEach(recipes => recipes.ingredients.forEach(
-        ingredient => 
-            !shoppingListItems.find(entry => entry === ingredient)
-            && shoppingListItems.push(ingredient)
-    ));
+    addedRecipes.forEach(recipe => addRecipeDependencies(recipe));
     const preExistingRecipes = data.filter(recipe => recipe.state === "added");
     const recipesToRender = addedRecipes.concat(preExistingRecipes);
     const recipesHTML = recipesToRender.map(recipe =>
@@ -49,8 +66,8 @@ const renderList = () => {
         </button>
     </div>`).join("");
     const shoppingListHTML = shoppingListItems.map(ingredient => 
-        `<div class="ingredient">
-            <p>${ingredient}</p>
+        `<div class="ingredient" data-src="${ingredient.src}">
+            <p>${ingredient.name}</p>
             <button class="remove-item">Remove</button>
         </div>`).join("");
     recipesEl.innerHTML = recipesHTML;
@@ -70,6 +87,9 @@ const addItems = e => {
     const recipe = data[data.findIndex(e => e.href === recipeHref)];
     recipe.state = "adding";
     renderList();
+    e.currentTarget.setAttribute("disabled", "true");
+    e.currentTarget.textContent("Added");
+    setTimeout(() => recipeEl.remove(), 1500);
     recipe.state = "added";
 }
 
@@ -93,8 +113,7 @@ const renderSearch = recipes => {
 }
 
 const fetchRecipes = query => {
-    const request = fetch(`${endpoint}?q=${query}`)
-                    .then(response => response.json());
+    const request = fetch(`${endpoint}?q=${query}`).then(response => response.json());
     return request;
 }
 
@@ -120,12 +139,22 @@ const addCustomItem = e => {
     e.preventDefault();
     const newItem = e.target.item.value;
     !shoppingListItems.find(item => item === newItem)
-        && shoppingListItems.push(newItem);
+        && shoppingListItems.push({
+            name: newItem,
+            src: "custom",
+        });
     renderList();
     addCustomForm.reset();
 }
 
+const goShopping = e => {
+    e.preventDefault;
+    // TODO...
+}
+
 searchForm.addEventListener("submit", searchRecipes);
 addCustomForm.addEventListener("submit", addCustomItem);
+goButton.addEventListener("click", goShopping);
+
 addCustomForm.reset();
 searchForm.reset();
