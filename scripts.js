@@ -47,10 +47,16 @@ const activateButtons = () => {
 const addRecipeDependencies = recipe => {
     const recipeSrc = recipe.href;
     recipe.ingredients.forEach(ingredient => {
+        debugger;
         const itemIndex = shoppingListItems.findIndex(entry => entry.name === ingredient);
-        itemIndex
-            ? shoppingListItems.push({ name: ingredient, src: [recipeSrc] })
-            : shoppingListItems[itemIndex].src.push(recipeSrc)
+        switch (itemIndex === -1) {
+            case true: 
+                shoppingListItems.push({ name: ingredient, src: [recipeSrc] })
+                break;
+            case false: 
+                shoppingListItems[itemIndex].src.push(recipeSrc)
+                break;
+        }
     })
 }
 
@@ -88,28 +94,32 @@ const addItems = e => {
     recipe.state = "adding";
     renderList();
     e.currentTarget.setAttribute("disabled", "true");
-    e.currentTarget.textContent("Added");
+    e.currentTarget.textContent = "Added"
     setTimeout(() => recipeEl.remove(), 1500);
     recipe.state = "added";
 }
 
 const renderSearch = recipes => {
-    const resultsHTML = recipes.map(recipe => 
-        `<div class="search-results-item">
-            <h3 class="recipe-name">${ recipe.title }</h3>
-            ${ recipe.thumbnail && `<img class="thumbnail" src="${ recipe.thumbnail }" />`}
-            <p><strong>Ingredients: </strong>
-                <span class="ingredients">${ recipe.ingredients.join(", ")}</span>
-            </p>
-            <a class="recipe-src" href="${recipe.href}">View recipe</a>
-            <button class="add-recipe">Add Items</button>
-        </div>`
-    ).join("");
-    searchResultsList.innerHTML = resultsHTML;
-    searchResultsList.querySelectorAll("button.add-recipe").forEach(
-        btn => btn.addEventListener("click", addItems)
-    );
-    searchResultsList.getAttribute("style") && searchResultsList.removeAttribute("style");
+    if (recipes.length === 0) {
+        searchResultsList.innerHTML = `<h3>No results found. Please try again.</h3>`
+    } else {
+        const resultsHTML = recipes.map(recipe => 
+            `<div class="search-results-item">
+                <h3 class="recipe-name">${ recipe.title }</h3>
+                ${ recipe.thumbnail && `<img class="thumbnail" src="${ recipe.thumbnail }" />`}
+                <p><strong>Ingredients: </strong>
+                    <span class="ingredients">${ recipe.ingredients.join(", ")}</span>
+                </p>
+                <a class="recipe-src" href="${recipe.href}">View recipe</a>
+                <button class="add-recipe">Add Items</button>
+            </div>`
+        ).join("");
+        searchResultsList.innerHTML = resultsHTML;
+        searchResultsList.querySelectorAll("button.add-recipe").forEach(
+            btn => btn.addEventListener("click", addItems)
+        );
+        searchResultsList.getAttribute("style") && searchResultsList.removeAttribute("style");
+    }
 }
 
 const fetchRecipes = query => {
@@ -132,7 +142,7 @@ const searchRecipes = async e => {
         !data.find(entry => entry.href === result.href)
         && data.push(result);
     })
-    renderSearch(results);
+    renderSearch(results)
 }
 
 const addCustomItem = e => {
