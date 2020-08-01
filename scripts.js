@@ -3,6 +3,7 @@ const searchForm = document.querySelector("form#search");
 const addCustomForm = document.querySelector("form#add-custom");
 const goButton = document.querySelector("button.go");
 const searchResultsList = document.querySelector(".search-results-list");
+const searchHeader = document.querySelector(".search-header");
 const shoppingListContainer = document.querySelector(".shopping-list");
 const ingredientsEl = document.querySelector(".shopping-list .ingredients");
 const recipesEl = document.querySelector(".shopping-list .recipes")
@@ -47,7 +48,6 @@ const activateButtons = () => {
 const addRecipeDependencies = recipe => {
     const recipeSrc = recipe.href;
     recipe.ingredients.forEach(ingredient => {
-        debugger;
         const itemIndex = shoppingListItems.findIndex(entry => entry.name === ingredient);
         switch (itemIndex === -1) {
             case true: 
@@ -87,7 +87,14 @@ const renderList = () => {
     activateButtons();
 }
 
-const addItems = e => {
+const openSearch = e => {
+    searchForm.reset();
+    searchHeader.style.display = "block";
+    e.currentTarget.removeEventListener("click", openSearch);
+    e.currentTarget.remove();
+}
+
+const addItems = async e => {
     const recipeEl = e.currentTarget.closest(".search-results-item");
     const recipeHref = recipeEl.querySelector(".recipe-src").href;
     const recipe = data[data.findIndex(e => e.href === recipeHref)];
@@ -95,8 +102,15 @@ const addItems = e => {
     renderList();
     e.currentTarget.setAttribute("disabled", "true");
     e.currentTarget.textContent = "Added"
-    setTimeout(() => recipeEl.remove(), 1500);
     recipe.state = "added";
+    const addMoreRecipes = document.createElement("button")
+    addMoreRecipes.textContent = "Want to add more recipes?";
+    addMoreRecipes.addEventListener("click", openSearch);
+    setTimeout(() => {
+        searchHeader.style.display = "none";
+        searchResultsList.style.display = "none";
+        !searchHeader.previousElementSibling && searchHeader.insertAdjacentElement("beforebegin", addMoreRecipes);
+    }, 1500);
 }
 
 const renderSearch = recipes => {
@@ -118,7 +132,7 @@ const renderSearch = recipes => {
         searchResultsList.querySelectorAll("button.add-recipe").forEach(
             btn => btn.addEventListener("click", addItems)
         );
-        searchResultsList.getAttribute("style") && searchResultsList.removeAttribute("style");
+        searchResultsList.removeAttribute("style");
     }
 }
 
@@ -135,7 +149,7 @@ const searchRecipes = async e => {
         title: recipe.title,
         href: recipe.href,
         thumbnail: recipe.thumbnail,
-        ingredients: recipe.ingredients.split(", "),
+        ingredients: Array.from(new Set(recipe.ingredients.split(", "))),
         state: "loaded"
     }));
     results.forEach(result => {
@@ -159,7 +173,7 @@ const addCustomItem = e => {
 
 const goShopping = e => {
     e.preventDefault;
-    // TODO...
+    alert("Oops! This feature wasn't implemented... yet.");
 }
 
 searchForm.addEventListener("submit", searchRecipes);

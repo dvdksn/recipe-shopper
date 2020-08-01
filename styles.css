@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
 
 body {
-    margin: 50px 0 50px 0;
+    margin: 20px 0 50px 0;
 }
 
 :root {
@@ -33,6 +33,10 @@ html {
 *:before,
 *:after {
     box-sizing: inherit;
+}
+
+.fade {
+    animation: fadeOut 1.5s ease-out;
 }
 
 .header {
@@ -65,6 +69,7 @@ html {
 }
 
 .sub-title * {
+    font-size: 0.7rem;
     margin: 0rem;
     color: var(--white);
 }
@@ -293,16 +298,16 @@ button {
   100% { transform: rotate(360deg); }
 }
 
+/********************************
+**** https://loading.io/css/ ****
+*********************************/
+
 .lds-hourglass {
     display: inline-block;
     position: relative;
     width: 80px;
     height: 80px;
 }
-
-/********************************
-**** https://loading.io/css/ ****
-*********************************/
 
 .lds-hourglass:after {
     content: " ";
